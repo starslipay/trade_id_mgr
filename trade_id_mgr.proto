@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package trade_id_mgr;
+// 相对路径;包名
+option go_package = "./trade_id_mgr_pb";
+
+message GenTradeIdReq {
+    string sp_id = 1;  // 商户id
+    int32 acc_set = 2;  // 付款账户所属编号
+    int64 uid = 3;  // 付款方uid
+}
+
+message GenTradeIdRsp {
+    string trade_id = 1;
+}
+
+service TradeIdMgr {
+    rpc GenTradeId(GenTradeIdReq) returns (GenTradeIdRsp);
+}
+
+/*
+生成项目框架
+goctl rpc protoc trade_id_mgr.proto --go_out=. --go-grpc_out=. --zrpc_out=.
+*/
