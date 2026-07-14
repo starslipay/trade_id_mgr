@@ -3,7 +3,8 @@ package svc
 import (
 	"os"
 	"sync"
-	"trade_id_mgr/internal/config"
+
+	"github.com/starslipay/trade_id_mgr/internal/config"
 )
 
 type ServiceContext struct {

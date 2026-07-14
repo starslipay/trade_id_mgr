@@ -7,7 +7,7 @@ package tradeidmgr
 import (
 	"context"
 
-	"trade_id_mgr/trade_id_mgr_pb"
+	"github.com/starslipay/trade_id_mgr/trade_id_mgr_pb"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

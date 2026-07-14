@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 
-	"trade_id_mgr/internal/config"
-	"trade_id_mgr/internal/server"
-	"trade_id_mgr/internal/svc"
-	"trade_id_mgr/trade_id_mgr_pb"
+	"github.com/starslipay/trade_id_mgr/internal/config"
+	"github.com/starslipay/trade_id_mgr/internal/server"
+	"github.com/starslipay/trade_id_mgr/internal/svc"
+	"github.com/starslipay/trade_id_mgr/trade_id_mgr_pb"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"

@@ -1,4 +1,4 @@
-module trade_id_mgr
+module github.com/starslipay/trade_id_mgr
 
 go 1.25.4
 

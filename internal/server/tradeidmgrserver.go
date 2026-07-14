@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
-	"trade_id_mgr/internal/logic"
-	"trade_id_mgr/internal/svc"
-	"trade_id_mgr/trade_id_mgr_pb"
+	"github.com/starslipay/trade_id_mgr/internal/logic"
+	"github.com/starslipay/trade_id_mgr/internal/svc"
+	"github.com/starslipay/trade_id_mgr/trade_id_mgr_pb"
 )
 
 type TradeIdMgrServer struct {
