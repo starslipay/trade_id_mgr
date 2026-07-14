@@ -11,15 +11,15 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 # 编译
-RUN go build -o trade_itg_mgr .
+RUN go build -o trade_id_mgr .
 
 # 运行镜像
 FROM alpine:3.19
 WORKDIR /app
-COPY --from=builder /app/trade_itg_mgr .
+COPY --from=builder /app/trade_id_mgr .
 COPY --from=builder /app/etc ./etc
 # 时区
 RUN apk add --no-cache tzdata
 ENV TZ=Asia/Shanghai
 EXPOSE 8888
-CMD ["./trade_itg_mgr", "-f", "./etc/tradeidmgr.yaml"]
+CMD ["./trade_id_mgr", "-f", "./etc/tradeidmgr.yaml"]
