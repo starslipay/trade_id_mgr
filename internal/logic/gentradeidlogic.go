@@ -34,7 +34,7 @@ func (l *GenTradeIdLogic) GenTradeId(in *trade_id_mgr_pb.GenTradeIdReq) (*trade_
 		strconv.FormatInt(int64(in.AccSet), 10) + // 资金账户集群编号
 		l.svcCtx.MachineId + strconv.FormatInt(int64(l.svcCtx.GetLocalSeqNo()), 10) + // 业务序列号（机器号+机器自增序号）
 		strconv.FormatInt(int64(in.Uid)%1000, 10) // 付款方uid尾号（取后3位）
-
+	// TODO 单号待优化
 	return &trade_id_mgr_pb.GenTradeIdRsp{
 		TradeId: tradeId,
 	}, nil
