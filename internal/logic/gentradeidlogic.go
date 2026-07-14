@@ -2,7 +2,7 @@ package logic
 
 import (
 	"context"
-	"strconv"
+	"fmt"
 	"time"
 
 	"github.com/starslipay/trade_id_mgr/internal/svc"
@@ -27,14 +27,16 @@ func NewGenTradeIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GenTra
 
 func (l *GenTradeIdLogic) GenTradeId(in *trade_id_mgr_pb.GenTradeIdReq) (*trade_id_mgr_pb.GenTradeIdRsp, error) {
 	// 10位商户号 + 8位时间（yyyymmdd） + 3位预留扩展标记 + 2位订单集群编号 + 2位资金账户集群编号 + 10位业务序列号 + 3位付款方uid尾号
-	tradeId := in.SpId + // 商户id
-		time.Now().Format("20060102") + // 时间（yyyymmdd）
-		"000" + //  3位预留扩展标记： 比如1位社交/商业 + 2位业务标记
-		l.svcCtx.OrderSet + // 订单集群编号
-		strconv.FormatInt(int64(in.AccSet), 10) + // 资金账户集群编号
-		l.svcCtx.MachineId + strconv.FormatInt(int64(l.svcCtx.GetLocalSeqNo()), 10) + // 业务序列号（机器号+机器自增序号）
-		strconv.FormatInt(int64(in.Uid)%1000, 10) // 付款方uid尾号（取后3位）
-	// TODO 单号待优化
+	tradeId := fmt.Sprintf("%s%s%s%s%02d%s%08d%03d",
+		in.SpId,
+		time.Now().Format("20060102"),
+		"000",
+		l.svcCtx.OrderSet,
+		in.AccSet,
+		l.svcCtx.MachineId,
+		l.svcCtx.GetLocalSeqNo(),
+		in.Uid%1000)
+	// TODO 单号待优化,机器重启会出现重复的情况
 	return &trade_id_mgr_pb.GenTradeIdRsp{
 		TradeId: tradeId,
 	}, nil

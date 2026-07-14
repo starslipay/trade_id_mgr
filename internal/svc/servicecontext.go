@@ -20,7 +20,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:     c,
 		OrderSet:   GetOrderSet(),
 		MachineId:  GetMachineId(),
-		localSeqNo: 10000000,
+		localSeqNo: 0,
 	}
 }
 
@@ -51,7 +51,7 @@ func (g *ServiceContext) GetLocalSeqNo() int32 {
 	ret := g.localSeqNo
 	g.localSeqNo += 1
 	if g.localSeqNo > 99999999 {
-		g.localSeqNo = 10000000
+		g.localSeqNo = 0
 	}
 	return ret
 }
