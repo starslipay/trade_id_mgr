@@ -4,8 +4,8 @@ Timeout: 10000
 
 Etcd:
   Hosts:
-    # - etcd:2379 # 部署到本地docker
-    - 127.0.0.1:2379 # 直接运行
+    - etcd:2379 # 部署到本地docker
+    # - 127.0.0.1:2379 # 本地直接运行
     # - etcd-0.etcd.pay-ns.svc.cluster.local:2379
     # - etcd-1.etcd.pay-ns.svc.cluster.local:2379
     # - etcd-2.etcd.pay-ns.svc.cluster.local:2379
