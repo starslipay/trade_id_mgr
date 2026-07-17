@@ -117,6 +117,7 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 
 	cache := value.(*IdSegmentCache)
 	cache.mu.Lock()
+	defer cache.mu.Unlock()
 
 	if cache.curID > cache.segmentEnd {
 		if cache.nextCurID > 0 && cache.nextSegmentEnd > 0 {
@@ -133,13 +134,8 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 			cache.nextStepSize = 0
 			cache.prefetching.Store(false)
 		} else {
-			cache.mu.Unlock()
-
-			if err := g.loadSegmentToCache(ctx, cache, false); err != nil {
-				return 0, err
-			}
-
-			cache.mu.Lock()
+			// 号段用完且没有下一个号段直接返回错误
+			return 0, ErrSegmentExhausted
 		}
 	}
 
@@ -147,12 +143,15 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 	cache.curID++
 
 	threshold := cache.segmentStart + (cache.segmentEnd-cache.segmentStart)*4/5
-	if cache.curID > threshold && !cache.prefetching.Load() {
+	isPrefetching := cache.prefetching.Load()
+
+	if cache.curID > threshold && !isPrefetching {
 		cache.prefetching.Store(true)
-		go g.asyncPrefetch(ctx, sceneID, cache)
+		go g.asyncPrefetch(ctx, int64(sceneID), cache)
+	} else if cache.curID <= threshold {
+	} else if isPrefetching {
 	}
 
-	cache.mu.Unlock()
 	return id, nil
 }
 
@@ -189,9 +188,16 @@ func (g *IDGenerator) asyncPrefetch(ctx context.Context, sceneID int64, cache *I
 }
 
 var ErrSceneNotFound = &SceneNotFoundError{}
+var ErrSegmentExhausted = &SegmentExhaustedError{}
 
 type SceneNotFoundError struct{}
 
 func (e *SceneNotFoundError) Error() string {
 	return "scene not found"
+}
+
+type SegmentExhaustedError struct{}
+
+func (e *SegmentExhaustedError) Error() string {
+	return "segment exhausted"
 }

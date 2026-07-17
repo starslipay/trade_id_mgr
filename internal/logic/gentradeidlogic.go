@@ -27,7 +27,6 @@ func NewGenTradeIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GenTra
 
 func (l *GenTradeIdLogic) GenTradeId(in *trade_id_mgr_pb.GenTradeIdReq) (*trade_id_mgr_pb.GenTradeIdRsp, error) {
 	// 我的单号规则是 商户号（10位数字） + 时间（yyyyyymmdd）+ set 编号（2 位） + acc_set 编号（2 位） + billno（int64 数字，19 位向左补 0） + uid 后三位
-	// 10位商户号 + 8位时间（yyyymmdd） + 3位预留扩展标记 + 2位订单集群编号 + 2位资金账户集群编号 + 10位业务序列号 + 3位付款方uid尾号
 	bill_no, err := l.svcCtx.IDGenerator.GetID(l.ctx, in.SceneId)
 	if err != nil {
 		return nil, err
