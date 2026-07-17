@@ -10,3 +10,11 @@ Etcd:
     # - etcd-1.etcd.pay-ns.svc.cluster.local:2379
     # - etcd-2.etcd.pay-ns.svc.cluster.local:2379
   Key: tradeidmgr.rpc
+
+SceneId:
+  - 0  # UID
+  - 1  # C2C
+
+MasterDBConfig:
+  # DataSource: root:root123456@tcp(mysql-primary.pay-ns.svc.cluster.local:3306)/user_db?charset=utf8mb4&parseTime=True&loc=Local&timeout=5s&readTimeout=10s&writeTimeout=10s  # k8s
+  DataSource: root:root123456@tcp(mysql8:3306)/id_generator_db?charset=utf8mb4&parseTime=True&loc=Local&timeout=5s&readTimeout=10s&writeTimeout=10s  # 开发环境

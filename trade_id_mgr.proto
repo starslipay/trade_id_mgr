@@ -8,6 +8,7 @@ message GenTradeIdReq {
     string sp_id = 1;  // 商户id
     int32 acc_set = 2;  // 付款账户所属编号
     int64 uid = 3;  // 付款方uid
+    int64 scene_id = 4;  // 场景id
 }
 
 message GenTradeIdRsp {
