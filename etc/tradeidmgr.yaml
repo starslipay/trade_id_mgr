@@ -11,7 +11,7 @@ Etcd:
     # - etcd-2.etcd.pay-ns.svc.cluster.local:2379
   Key: tradeidmgr.rpc
 
-SceneId:
+SceneIdList:
   - 0  # UID
   - 1  # C2C
 
