@@ -178,7 +178,7 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 	cache.curMu.Unlock()
 
 	if needPrefetch {
-		go g.asyncPrefetch(ctx, sceneID, cache)
+		go g.asyncPrefetch(context.Background(), sceneID, cache)
 	}
 
 	return id, nil
