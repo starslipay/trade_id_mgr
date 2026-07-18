@@ -207,6 +207,8 @@ func (g *IDGenerator) asyncPrefetch(ctx context.Context, sceneID int64, doubleCa
 	doubleCache.mu.Unlock()
 
 	log.Printf("[IDGenerator] asyncPrefetch completed: scene=%d, nextBuf=[%d,%d]", sceneID, segmentStart, segmentEnd)
+	// 异步预取完成后，取消正在取备用缓存数据的标志
+	doubleCache.isPreFetching.Store(false)
 }
 
 var ErrSceneNotFound = &SceneNotFoundError{}
