@@ -155,9 +155,8 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 	id := doubleCache.activeCache.curID
 	doubleCache.activeCache.curID++
 
-	// 计算需要触发异步预取的ID阈值 80%
-	// 80% 是根据经验，根据实际场景调整
-	threshold := doubleCache.activeCache.segmentStart + (doubleCache.activeCache.segmentEnd-doubleCache.activeCache.segmentStart)*4/5
+	// 计算需要触发异步预取的ID阈值 50%
+	threshold := doubleCache.activeCache.segmentStart + (doubleCache.activeCache.segmentEnd-doubleCache.activeCache.segmentStart)*1/2
 	// 计算当前缓存已使用个数
 	remaining := doubleCache.activeCache.segmentEnd - doubleCache.activeCache.curID + 1
 	// 计算当前缓存总个数
