@@ -148,6 +148,7 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 			log.Printf("[IDGenerator] scene=%d, 切换缓存: curBuf=[%d,%d]", sceneID, doubleCache.activeCache.curID, doubleCache.activeCache.segmentEnd)
 		} else {
 			doubleCache.mu.Unlock()
+			// 报错id已用完
 			return 0, ErrSegmentExhausted
 		}
 	}
@@ -155,6 +156,7 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 	id := doubleCache.activeCache.curID
 	doubleCache.activeCache.curID++
 
+	// 到达阈值后的剩余ID数量一定要大于单机并发数，否则当前缓存消耗完了，备用缓存还来不及预取，会报错id已用完
 	// 计算需要触发异步预取的ID阈值 50%
 	threshold := doubleCache.activeCache.segmentStart + (doubleCache.activeCache.segmentEnd-doubleCache.activeCache.segmentStart)*1/2
 	// 计算当前缓存已使用个数
