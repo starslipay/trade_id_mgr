@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS `id_generator_db` DEFAULT CHARACTER SET utf8mb4 CO
 
 -- Use database
 USE `id_generator_db`;
-
+-- `id_generator_db`.`t_id_segment`
 DROP TABLE IF EXISTS `t_id_segment`;
 CREATE TABLE `t_id_segment` (
   `scene_id` BIGINT NOT NULL COMMENT '场景标识',
@@ -19,10 +19,10 @@ CREATE TABLE `t_id_segment` (
 -- int64max = 9223372036854775807 ≈ 9200000000000000000
 -- 初始化你的账单业务池
 INSERT INTO t_id_segment(scene_id,max_allocated_id,min_id,max_id,step_size,memo)
-VALUES (1,0,0,9200000000000000000,10,'C2C');
+VALUES (1,0,0,9200000000000000000,100,'C2C');
 
 INSERT INTO t_id_segment(scene_id,max_allocated_id,min_id,max_id,step_size,memo)
-VALUES (0,0,10000000000,9200000000000000000,10,'UID');
+VALUES (0,0,10000000000,9200000000000000000,100,'UID');
 
 -- linux:  mysql -h 127.0.0.1 -P 3306 -u root -proot123456 < id_generator_init.sql
 -- windows: Get-Content -Encoding UTF8 id_generator_init.sql | mysql -h 127.0.0.1 -P 3306 -u root -proot123456
