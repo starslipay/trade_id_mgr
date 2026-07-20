@@ -1,1 +1,1 @@
-goctl rpc protoc user_mgr.proto --go_out=. --go-grpc_out=. --zrpc_out=.
+goctl rpc protoc trade_id_mgr.proto --go_out=. --go-grpc_out=. --zrpc_out=.
