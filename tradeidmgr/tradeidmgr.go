@@ -16,9 +16,12 @@ import (
 type (
 	GenTradeIdReq = trade_id_mgr_pb.GenTradeIdReq
 	GenTradeIdRsp = trade_id_mgr_pb.GenTradeIdRsp
+	GenUidReq     = trade_id_mgr_pb.GenUidReq
+	GenUidRsp     = trade_id_mgr_pb.GenUidRsp
 
 	TradeIdMgr interface {
 		GenTradeId(ctx context.Context, in *GenTradeIdReq, opts ...grpc.CallOption) (*GenTradeIdRsp, error)
+		GenUid(ctx context.Context, in *GenUidReq, opts ...grpc.CallOption) (*GenUidRsp, error)
 	}
 
 	defaultTradeIdMgr struct {
@@ -35,4 +38,9 @@ func NewTradeIdMgr(cli zrpc.Client) TradeIdMgr {
 func (m *defaultTradeIdMgr) GenTradeId(ctx context.Context, in *GenTradeIdReq, opts ...grpc.CallOption) (*GenTradeIdRsp, error) {
 	client := trade_id_mgr_pb.NewTradeIdMgrClient(m.cli.Conn())
 	return client.GenTradeId(ctx, in, opts...)
+}
+
+func (m *defaultTradeIdMgr) GenUid(ctx context.Context, in *GenUidReq, opts ...grpc.CallOption) (*GenUidRsp, error) {
+	client := trade_id_mgr_pb.NewTradeIdMgrClient(m.cli.Conn())
+	return client.GenUid(ctx, in, opts...)
 }

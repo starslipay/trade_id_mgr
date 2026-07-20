@@ -15,8 +15,16 @@ message GenTradeIdRsp {
     string trade_id = 1;
 }
 
+message GenUidReq {
+}
+
+message GenUidRsp {
+    int64 uid = 1;
+}
+
 service TradeIdMgr {
     rpc GenTradeId(GenTradeIdReq) returns (GenTradeIdRsp);
+    rpc GenUid(GenUidReq) returns (GenUidRsp);
 }
 
 /*

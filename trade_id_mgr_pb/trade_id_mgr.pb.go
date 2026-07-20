@@ -133,6 +133,86 @@ func (x *GenTradeIdRsp) GetTradeId() string {
 	return ""
 }
 
+type GenUidReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GenUidReq) Reset() {
+	*x = GenUidReq{}
+	mi := &file_trade_id_mgr_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenUidReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenUidReq) ProtoMessage() {}
+
+func (x *GenUidReq) ProtoReflect() protoreflect.Message {
+	mi := &file_trade_id_mgr_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenUidReq.ProtoReflect.Descriptor instead.
+func (*GenUidReq) Descriptor() ([]byte, []int) {
+	return file_trade_id_mgr_proto_rawDescGZIP(), []int{2}
+}
+
+type GenUidRsp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Uid           int64                  `protobuf:"varint,1,opt,name=uid,proto3" json:"uid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GenUidRsp) Reset() {
+	*x = GenUidRsp{}
+	mi := &file_trade_id_mgr_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenUidRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenUidRsp) ProtoMessage() {}
+
+func (x *GenUidRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_trade_id_mgr_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenUidRsp.ProtoReflect.Descriptor instead.
+func (*GenUidRsp) Descriptor() ([]byte, []int) {
+	return file_trade_id_mgr_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GenUidRsp) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
 var File_trade_id_mgr_proto protoreflect.FileDescriptor
 
 const file_trade_id_mgr_proto_rawDesc = "" +
@@ -144,11 +224,15 @@ const file_trade_id_mgr_proto_rawDesc = "" +
 	"\x03uid\x18\x03 \x01(\x03R\x03uid\x12\x19\n" +
 	"\bscene_id\x18\x04 \x01(\x03R\asceneId\"*\n" +
 	"\rGenTradeIdRsp\x12\x19\n" +
-	"\btrade_id\x18\x01 \x01(\tR\atradeId2T\n" +
+	"\btrade_id\x18\x01 \x01(\tR\atradeId\"\v\n" +
+	"\tGenUidReq\"\x1d\n" +
+	"\tGenUidRsp\x12\x10\n" +
+	"\x03uid\x18\x01 \x01(\x03R\x03uid2\x90\x01\n" +
 	"\n" +
 	"TradeIdMgr\x12F\n" +
 	"\n" +
-	"GenTradeId\x12\x1b.trade_id_mgr.GenTradeIdReq\x1a\x1b.trade_id_mgr.GenTradeIdRspB\x13Z\x11./trade_id_mgr_pbb\x06proto3"
+	"GenTradeId\x12\x1b.trade_id_mgr.GenTradeIdReq\x1a\x1b.trade_id_mgr.GenTradeIdRsp\x12:\n" +
+	"\x06GenUid\x12\x17.trade_id_mgr.GenUidReq\x1a\x17.trade_id_mgr.GenUidRspB\x13Z\x11./trade_id_mgr_pbb\x06proto3"
 
 var (
 	file_trade_id_mgr_proto_rawDescOnce sync.Once
@@ -162,16 +246,20 @@ func file_trade_id_mgr_proto_rawDescGZIP() []byte {
 	return file_trade_id_mgr_proto_rawDescData
 }
 
-var file_trade_id_mgr_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_trade_id_mgr_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_trade_id_mgr_proto_goTypes = []any{
 	(*GenTradeIdReq)(nil), // 0: trade_id_mgr.GenTradeIdReq
 	(*GenTradeIdRsp)(nil), // 1: trade_id_mgr.GenTradeIdRsp
+	(*GenUidReq)(nil),     // 2: trade_id_mgr.GenUidReq
+	(*GenUidRsp)(nil),     // 3: trade_id_mgr.GenUidRsp
 }
 var file_trade_id_mgr_proto_depIdxs = []int32{
 	0, // 0: trade_id_mgr.TradeIdMgr.GenTradeId:input_type -> trade_id_mgr.GenTradeIdReq
-	1, // 1: trade_id_mgr.TradeIdMgr.GenTradeId:output_type -> trade_id_mgr.GenTradeIdRsp
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 1: trade_id_mgr.TradeIdMgr.GenUid:input_type -> trade_id_mgr.GenUidReq
+	1, // 2: trade_id_mgr.TradeIdMgr.GenTradeId:output_type -> trade_id_mgr.GenTradeIdRsp
+	3, // 3: trade_id_mgr.TradeIdMgr.GenUid:output_type -> trade_id_mgr.GenUidRsp
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -188,7 +276,7 @@ func file_trade_id_mgr_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_trade_id_mgr_proto_rawDesc), len(file_trade_id_mgr_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

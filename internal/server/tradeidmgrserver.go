@@ -27,3 +27,8 @@ func (s *TradeIdMgrServer) GenTradeId(ctx context.Context, in *trade_id_mgr_pb.G
 	l := logic.NewGenTradeIdLogic(ctx, s.svcCtx)
 	return l.GenTradeId(in)
 }
+
+func (s *TradeIdMgrServer) GenUid(ctx context.Context, in *trade_id_mgr_pb.GenUidReq) (*trade_id_mgr_pb.GenUidRsp, error) {
+	l := logic.NewGenUidLogic(ctx, s.svcCtx)
+	return l.GenUid(in)
+}

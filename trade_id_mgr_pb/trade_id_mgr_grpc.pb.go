@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	TradeIdMgr_GenTradeId_FullMethodName = "/trade_id_mgr.TradeIdMgr/GenTradeId"
+	TradeIdMgr_GenUid_FullMethodName     = "/trade_id_mgr.TradeIdMgr/GenUid"
 )
 
 // TradeIdMgrClient is the client API for TradeIdMgr service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TradeIdMgrClient interface {
 	GenTradeId(ctx context.Context, in *GenTradeIdReq, opts ...grpc.CallOption) (*GenTradeIdRsp, error)
+	GenUid(ctx context.Context, in *GenUidReq, opts ...grpc.CallOption) (*GenUidRsp, error)
 }
 
 type tradeIdMgrClient struct {
@@ -47,11 +49,22 @@ func (c *tradeIdMgrClient) GenTradeId(ctx context.Context, in *GenTradeIdReq, op
 	return out, nil
 }
 
+func (c *tradeIdMgrClient) GenUid(ctx context.Context, in *GenUidReq, opts ...grpc.CallOption) (*GenUidRsp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GenUidRsp)
+	err := c.cc.Invoke(ctx, TradeIdMgr_GenUid_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TradeIdMgrServer is the server API for TradeIdMgr service.
 // All implementations must embed UnimplementedTradeIdMgrServer
 // for forward compatibility.
 type TradeIdMgrServer interface {
 	GenTradeId(context.Context, *GenTradeIdReq) (*GenTradeIdRsp, error)
+	GenUid(context.Context, *GenUidReq) (*GenUidRsp, error)
 	mustEmbedUnimplementedTradeIdMgrServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedTradeIdMgrServer struct{}
 
 func (UnimplementedTradeIdMgrServer) GenTradeId(context.Context, *GenTradeIdReq) (*GenTradeIdRsp, error) {
 	return nil, status.Error(codes.Unimplemented, "method GenTradeId not implemented")
+}
+func (UnimplementedTradeIdMgrServer) GenUid(context.Context, *GenUidReq) (*GenUidRsp, error) {
+	return nil, status.Error(codes.Unimplemented, "method GenUid not implemented")
 }
 func (UnimplementedTradeIdMgrServer) mustEmbedUnimplementedTradeIdMgrServer() {}
 func (UnimplementedTradeIdMgrServer) testEmbeddedByValue()                    {}
@@ -104,6 +120,24 @@ func _TradeIdMgr_GenTradeId_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TradeIdMgr_GenUid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenUidReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TradeIdMgrServer).GenUid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TradeIdMgr_GenUid_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TradeIdMgrServer).GenUid(ctx, req.(*GenUidReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TradeIdMgr_ServiceDesc is the grpc.ServiceDesc for TradeIdMgr service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var TradeIdMgr_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GenTradeId",
 			Handler:    _TradeIdMgr_GenTradeId_Handler,
+		},
+		{
+			MethodName: "GenUid",
+			Handler:    _TradeIdMgr_GenUid_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
