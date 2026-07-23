@@ -6,8 +6,11 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/starslipay/paycomm/xerror"
+	"github.com/starslipay/trade_id_mgr/internal/xerr"
 	"github.com/starslipay/trade_id_mgr/model/mysql"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"google.golang.org/grpc/codes"
 )
 
 type IdSegmentCache struct {
@@ -127,7 +130,7 @@ func (g *IDGenerator) loadAllSceneSegments(ctx context.Context) error {
 func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 	value, ok := g.sceneMap.Load(sceneID)
 	if !ok {
-		return 0, ErrSceneNotFound
+		return 0, xerror.NewBizError(codes.Internal, xerr.ErrCodeSceneNotFound, "scene not found")
 	}
 
 	doubleCache := value.(*IdSegmentDoubleCache)
@@ -149,7 +152,7 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 		} else {
 			doubleCache.mu.Unlock()
 			// 报错id已用完
-			return 0, ErrSegmentExhausted
+			return 0, xerror.NewBizError(codes.Internal, xerr.ErrCodeSegmentExhausted, "segment exhausted")
 		}
 	}
 
@@ -210,19 +213,4 @@ func (g *IDGenerator) asyncPrefetch(ctx context.Context, sceneID int64, doubleCa
 	log.Printf("[IDGenerator] asyncPrefetch completed: scene=%d, nextBuf=[%d,%d]", sceneID, segmentStart, segmentEnd)
 	// 异步预取完成后，取消正在取备用缓存数据的标志
 	doubleCache.isPreFetching.Store(false)
-}
-
-var ErrSceneNotFound = &SceneNotFoundError{}
-var ErrSegmentExhausted = &SegmentExhaustedError{}
-
-type SceneNotFoundError struct{}
-
-func (e *SceneNotFoundError) Error() string {
-	return "scene not found"
-}
-
-type SegmentExhaustedError struct{}
-
-func (e *SegmentExhaustedError) Error() string {
-	return "segment exhausted"
 }
