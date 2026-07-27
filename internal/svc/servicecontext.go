@@ -27,14 +27,14 @@ func NewServiceContext(c config.Config) *ServiceContext {
 }
 
 func GetOrderSet() int {
-	// 从环境变量中获取订单集群编号
-	// 如果环境变量中没有配置，默认使用配置文件中的值
-	orderSet, err := strconv.Atoi(os.Getenv("ORDER_SET"))
+	// 从环境变量中获取订单集群编号,默认值为16
+	orderSetStr := os.Getenv("ORDER_SET")
+	if orderSetStr == "" {
+		orderSetStr = "16"
+	}
+	orderSet, err := strconv.Atoi(orderSetStr)
 	if err != nil {
 		panic(err)
-	}
-	if orderSet == 0 {
-		orderSet = 0
 	}
 	return orderSet
 }
