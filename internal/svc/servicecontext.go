@@ -2,6 +2,7 @@ package svc
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/starslipay/trade_id_mgr/internal/config"
 	"github.com/starslipay/trade_id_mgr/internal/id_generator"
@@ -11,7 +12,7 @@ import (
 
 type ServiceContext struct {
 	Config      config.Config
-	OrderSet    string
+	OrderSet    int
 	IDGenerator *id_generator.IDGenerator
 }
 
@@ -25,12 +26,15 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 }
 
-func GetOrderSet() string {
+func GetOrderSet() int {
 	// 从环境变量中获取订单集群编号
 	// 如果环境变量中没有配置，默认使用配置文件中的值
-	orderSet := os.Getenv("ORDER_SET")
-	if orderSet == "" {
-		orderSet = "00"
+	orderSet, err := strconv.Atoi(os.Getenv("ORDER_SET"))
+	if err != nil {
+		panic(err)
+	}
+	if orderSet == 0 {
+		orderSet = 0
 	}
 	return orderSet
 }

@@ -24,9 +24,8 @@ const (
 type GenTradeIdReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SpId          string                 `protobuf:"bytes,1,opt,name=sp_id,json=spId,proto3" json:"sp_id,omitempty"`           // 商户id
-	AccSet        int32                  `protobuf:"varint,2,opt,name=acc_set,json=accSet,proto3" json:"acc_set,omitempty"`    // 付款账户所属编号
-	Uid           int64                  `protobuf:"varint,3,opt,name=uid,proto3" json:"uid,omitempty"`                        // 付款方uid
-	SceneId       int64                  `protobuf:"varint,4,opt,name=scene_id,json=sceneId,proto3" json:"scene_id,omitempty"` // 场景id
+	Uid           int64                  `protobuf:"varint,2,opt,name=uid,proto3" json:"uid,omitempty"`                        // 付款方uid
+	SceneId       int64                  `protobuf:"varint,3,opt,name=scene_id,json=sceneId,proto3" json:"scene_id,omitempty"` // 场景id
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -66,13 +65,6 @@ func (x *GenTradeIdReq) GetSpId() string {
 		return x.SpId
 	}
 	return ""
-}
-
-func (x *GenTradeIdReq) GetAccSet() int32 {
-	if x != nil {
-		return x.AccSet
-	}
-	return 0
 }
 
 func (x *GenTradeIdReq) GetUid() int64 {
@@ -217,12 +209,11 @@ var File_trade_id_mgr_proto protoreflect.FileDescriptor
 
 const file_trade_id_mgr_proto_rawDesc = "" +
 	"\n" +
-	"\x12trade_id_mgr.proto\x12\ftrade_id_mgr\"j\n" +
+	"\x12trade_id_mgr.proto\x12\ftrade_id_mgr\"Q\n" +
 	"\rGenTradeIdReq\x12\x13\n" +
-	"\x05sp_id\x18\x01 \x01(\tR\x04spId\x12\x17\n" +
-	"\aacc_set\x18\x02 \x01(\x05R\x06accSet\x12\x10\n" +
-	"\x03uid\x18\x03 \x01(\x03R\x03uid\x12\x19\n" +
-	"\bscene_id\x18\x04 \x01(\x03R\asceneId\"*\n" +
+	"\x05sp_id\x18\x01 \x01(\tR\x04spId\x12\x10\n" +
+	"\x03uid\x18\x02 \x01(\x03R\x03uid\x12\x19\n" +
+	"\bscene_id\x18\x03 \x01(\x03R\asceneId\"*\n" +
 	"\rGenTradeIdRsp\x12\x19\n" +
 	"\btrade_id\x18\x01 \x01(\tR\atradeId\"\v\n" +
 	"\tGenUidReq\"\x1d\n" +
