@@ -18,3 +18,9 @@ SceneIdList:
 MasterDBConfig:
   # DataSource: root:root123456@tcp(mysql-primary.pay-ns.svc.cluster.local:3306)/user_db?charset=utf8mb4&parseTime=True&loc=Local&timeout=5s&readTimeout=10s&writeTimeout=10s  # k8s
   DataSource: root:root123456@tcp(mysql8:3306)/id_generator_db?charset=utf8mb4&parseTime=True&loc=Local&timeout=5s&readTimeout=10s&writeTimeout=10s  # 开发环境
+
+# Prometheus 指标采集：go-zero 会另起一个独立 HTTP 端口暴露 /metrics
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9090
+  Path: /metrics
