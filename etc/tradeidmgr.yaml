@@ -1,6 +1,9 @@
 Name: tradeidmgr.rpc
 ListenOn: 0.0.0.0:8080
 Timeout: 10000
+# 关闭服务端熔断(其它中间件保持默认开启)
+Middlewares:
+  Breaker: false
 
 Etcd:
   Hosts:
