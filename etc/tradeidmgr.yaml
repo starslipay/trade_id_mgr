@@ -1,9 +1,6 @@
 Name: tradeidmgr.rpc
 ListenOn: 0.0.0.0:8080
 Timeout: 10000
-# 关闭服务端熔断(其它中间件保持默认开启)
-Middlewares:
-  Breaker: false
 
 Etcd:
   Hosts:
@@ -27,3 +24,10 @@ Prometheus:
   Host: 0.0.0.0
   Port: 9090
   Path: /metrics
+
+# 链路追踪：go-zero 通过 OTLP 协议发送 trace 到 Tempo
+Telemetry:
+  Name: trade_id_mgr
+  Endpoint: http://tempo:4318
+  Batcher: otlphttp
+  Sampler: 1.0
