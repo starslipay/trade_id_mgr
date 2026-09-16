@@ -28,6 +28,6 @@ Prometheus:
 # 链路追踪：go-zero 通过 OTLP 协议发送 trace 到 Tempo
 Telemetry:
   Name: trade_id_mgr
-  Endpoint: http://tempo:4318
+  Endpoint: tempo:4318
   Batcher: otlphttp
   Sampler: 1.0
