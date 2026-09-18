@@ -31,3 +31,13 @@ Telemetry:
   Endpoint: tempo:4318
   Batcher: otlphttp
   Sampler: 1.0
+
+# AccessLog: 请求/响应日志记录(按字段名脱敏)
+AccessLog:
+  Enable: true
+  SensitiveFields:
+    - password
+    - user_token
+    - old_password
+    - new_password
+    - pay_password

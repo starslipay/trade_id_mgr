@@ -8,4 +8,13 @@ type Config struct {
 	MasterDBConfig struct {
 		DataSource string
 	}
+
+	// AccessLog 请求/响应日志脱敏配置
+	AccessLog AccessLogConf
+}
+
+// AccessLogConf 访问日志配置
+type AccessLogConf struct {
+	Enable          bool     `json:",default=true"`
+	SensitiveFields []string `json:",optional"`
 }
