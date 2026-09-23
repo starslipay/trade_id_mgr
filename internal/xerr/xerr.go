@@ -8,11 +8,11 @@ var (
 )
 
 var (
-	// 系统错误 0000-0999
+	// 系统错误 000-099
 	ErrCodeDB             = int64(455903000)
 	ErrCodeServerInternal = int64(455903001)
 
-	// 业务错误码 1000-1999
-	ErrCodeSceneNotFound    = int64(455903100)
-	ErrCodeSegmentExhausted = int64(455903101)
+	// 业务错误码 100-199
+	ErrCodeSceneNotFound    = int64(455903100) // 场景不存在
+	ErrCodeSegmentExhausted = int64(455903101) // 号段已耗尽
 )

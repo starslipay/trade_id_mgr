@@ -1,6 +1,10 @@
 Name: tradeidmgr.rpc
 ListenOn: 0.0.0.0:8080
 Timeout: 10000
+Middlewares:
+  Breaker: false  # 关闭服务端熔断
+  Shedding: false # 关闭自适应降载（service overloaded，不是熔断，一并关掉）
+CpuThreshold: 0 # 0 关闭CPU过载降载兜底保护
 
 Etcd:
   Hosts:
