@@ -4,16 +4,15 @@ package xerr
 // 模块id  80000
 // 错误码 = 模块id + 业务错误码
 var (
-	ModuleId        = int64(455903)
-	ModuleErrorBase = ModuleId * 100
+	ModuleId = int64(455903)
 )
 
 var (
 	// 系统错误 0000-0999
-	ErrCodeDB             = ModuleErrorBase + 0
-	ErrCodeServerInternal = ModuleErrorBase + 1
+	ErrCodeDB             = int64(455903000)
+	ErrCodeServerInternal = int64(455903001)
 
 	// 业务错误码 1000-1999
-	ErrCodeSceneNotFound    = ModuleErrorBase + 100
-	ErrCodeSegmentExhausted = ModuleErrorBase + 101
+	ErrCodeSceneNotFound    = int64(455903100)
+	ErrCodeSegmentExhausted = int64(455903101)
 )
