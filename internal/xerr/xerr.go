@@ -5,7 +5,7 @@ package xerr
 // 错误码 = 模块id + 业务错误码
 var (
 	ModuleId        = int64(455903)
-	ModuleErrorBase = ModuleId * 1000
+	ModuleErrorBase = ModuleId * 100
 )
 
 var (
