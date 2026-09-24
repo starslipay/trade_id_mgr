@@ -9,6 +9,7 @@ import (
 	"github.com/starslipay/paycomm/xerror"
 	"github.com/starslipay/trade_id_mgr/internal/xerr"
 	"github.com/starslipay/trade_id_mgr/model/mysql"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"google.golang.org/grpc/codes"
 )
@@ -139,6 +140,7 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 
 	// cache.curID > cache.segmentEnd时说明当前缓存用完了
 	if doubleCache.activeCache.curID > doubleCache.activeCache.segmentEnd {
+		logx.WithContext(ctx).Infof("cache over, scene %d, activeCache curID=%d, segmentEnd=%d", doubleCache.sceneID, doubleCache.activeCache.curID, doubleCache.activeCache.segmentEnd)
 		// cache.standbyCache.segmentStart > 0 && cache.standbyCache.segmentEnd > 0 说明备用缓存有数据
 		if doubleCache.standbyCache.segmentStart > 0 && doubleCache.standbyCache.segmentEnd > 0 {
 			// 将备用缓存的数据切换到当前缓存
@@ -148,9 +150,11 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 			doubleCache.standbyCache.curID = 0
 			doubleCache.standbyCache.segmentStart = 0
 			doubleCache.standbyCache.segmentEnd = 0
-			log.Printf("[IDGenerator] scene=%d, 切换缓存: curBuf=[%d,%d]", sceneID, doubleCache.activeCache.curID, doubleCache.activeCache.segmentEnd)
+			logx.WithContext(ctx).Infof("[IDGenerator] scene=%d, switch cache: curBuf=[%d,%d]", sceneID, doubleCache.activeCache.curID, doubleCache.activeCache.segmentEnd)
 		} else {
 			doubleCache.mu.Unlock()
+			logx.WithContext(ctx).Errorf("scene %d, segment exhausted, activeCache curID=%d, segmentEnd=%d", doubleCache.sceneID, doubleCache.activeCache.curID, doubleCache.activeCache.segmentEnd)
+			logx.WithContext(ctx).Errorf("scene %d, segment exhausted, standbyCache curID=%d, segmentEnd=%d", doubleCache.sceneID, doubleCache.standbyCache.curID, doubleCache.standbyCache.segmentEnd)
 			// 报错id已用完
 			return 0, xerror.NewBizError(codes.Internal, xerr.ErrCodeSegmentExhausted, "segment exhausted")
 		}
@@ -160,8 +164,8 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 	doubleCache.activeCache.curID++
 
 	// 到达阈值后的剩余ID数量一定要大于单机并发数，否则当前缓存消耗完了，备用缓存还来不及预取，会报错id已用完
-	// 计算需要触发异步预取的ID阈值 50%
-	threshold := doubleCache.activeCache.segmentStart + (doubleCache.activeCache.segmentEnd-doubleCache.activeCache.segmentStart)*1/2
+	// 计算需要触发异步预取的ID阈值 1%
+	threshold := doubleCache.activeCache.segmentStart + (doubleCache.activeCache.segmentEnd-doubleCache.activeCache.segmentStart)*1/100
 	// 计算当前缓存已使用个数
 	remaining := doubleCache.activeCache.segmentEnd - doubleCache.activeCache.curID + 1
 	// 计算当前缓存总个数
@@ -172,14 +176,15 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 	// 自带 Load 内存屏障（acquire 语义），强制本次读取绕过 CPU 私有缓存，直接从主内存拿最新数据
 	// 禁止跨屏障指令乱序执行, 读取到
 	isPreFetching := doubleCache.isPreFetching.Load()
-	log.Printf("[IDGenerator] scene=%d, GetID=%d, segment=[%d,%d], threshold=%d, remaining=%d/%d (%.2f%%), standbyCache=[%d,%d], isStandbyHasData=%v",
+	logx.WithContext(ctx).Infof("[IDGenerator] scene=%d, GetID=%d, segment=[%d,%d], threshold=%d, remaining=%d/%d (%.2f%%), standbyCache=[%d,%d], isStandbyHasData=%v",
 		sceneID, id, doubleCache.activeCache.segmentStart, doubleCache.activeCache.segmentEnd, threshold, remaining, total, usagePercent, doubleCache.standbyCache.segmentStart, doubleCache.activeCache.segmentEnd, isPreFetching)
 	// 当前缓存使用率超过阈值，且备用缓存无数据，且当前没有正在取备用缓存数据，需触发异步预取
 	isNeedPreFetch := doubleCache.activeCache.curID > threshold && doubleCache.standbyCache.segmentStart == 0 && !isPreFetching
+	logx.WithContext(ctx).Infof("isNeedPreFetch, scene %d, GetID=%d, isNeedPreFetch=%v", doubleCache.sceneID, id, isNeedPreFetch)
 	if isNeedPreFetch {
 		// 触发异步预取前，提前设置正在正在取备用缓存数据, 防止并发情况下多个协程同时触发异步预取
 		doubleCache.isPreFetching.Store(true)
-		log.Printf("[IDGenerator] scene=%d, 触发异步预取: curID=%d > threshold=%d", sceneID, doubleCache.activeCache.curID, threshold)
+		logx.WithContext(ctx).Infof("trigger asyncPrefetch, scene %d, curID=%d > threshold=%d", doubleCache.sceneID, doubleCache.activeCache.curID, threshold)
 	}
 	doubleCache.mu.Unlock()
 
@@ -194,10 +199,10 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 
 func (g *IDGenerator) asyncPrefetch(ctx context.Context, sceneID int64, doubleCache *IdSegmentDoubleCache) {
 	log.Printf("[IDGenerator] asyncPrefetch start: scene=%d", sceneID)
-
+	logx.WithContext(ctx).Infof("asyncPrefetch start, scene %d", sceneID)
 	segmentStart, segmentEnd, err := g.fetchSegmentFromDB(ctx, sceneID)
 	if err != nil {
-		log.Printf("[IDGenerator] asyncPrefetch failed: scene=%d, error=%v", sceneID, err)
+		logx.WithContext(ctx).Errorf("asyncPrefetch failed, scene %d, error=%v", sceneID, err)
 		// 失败后，取消正在取备用缓存数据的标志
 		doubleCache.isPreFetching.Store(false)
 		return
@@ -210,7 +215,7 @@ func (g *IDGenerator) asyncPrefetch(ctx context.Context, sceneID int64, doubleCa
 	doubleCache.standbyCache.segmentEnd = segmentEnd
 	doubleCache.mu.Unlock()
 
-	log.Printf("[IDGenerator] asyncPrefetch completed: scene=%d, nextBuf=[%d,%d]", sceneID, segmentStart, segmentEnd)
+	logx.WithContext(ctx).Infof("asyncPrefetch completed, scene %d, nextBuf=[%d,%d]", sceneID, segmentStart, segmentEnd)
 	// 异步预取完成后，取消正在取备用缓存数据的标志
 	doubleCache.isPreFetching.Store(false)
 }

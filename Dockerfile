@@ -18,8 +18,9 @@ FROM alpine:3.19
 WORKDIR /app
 COPY --from=builder /app/trade_id_mgr .
 COPY --from=builder /app/etc ./etc
-# 时区
-RUN apk add --no-cache tzdata
+# 时区：先切换为阿里云镜像源，解决国内访问 dl-cdn.alpinelinux.org SSL 失败问题
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk add --no-cache tzdata
 ENV TZ=Asia/Shanghai
 EXPOSE 8888
 CMD ["./trade_id_mgr", "-f", "./etc/tradeidmgr.yaml"]
