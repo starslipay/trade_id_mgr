@@ -171,7 +171,7 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 	// 计算当前缓存总个数
 	total := doubleCache.activeCache.segmentEnd - doubleCache.activeCache.segmentStart + 1
 	// 计算当前缓存已使用率
-	usagePercent := float64(total-remaining) / float64(total) * 100
+	usagePercent := float64(remaining) / float64(total) * 100
 
 	// 自带 Load 内存屏障（acquire 语义），强制本次读取绕过 CPU 私有缓存，直接从主内存拿最新数据
 	// 禁止跨屏障指令乱序执行, 读取到
@@ -180,9 +180,9 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 		sceneID, id, doubleCache.activeCache.segmentStart, doubleCache.activeCache.segmentEnd, threshold, remaining, total, usagePercent, doubleCache.standbyCache.segmentStart, doubleCache.standbyCache.segmentEnd, isPreFetching)
 	// 当前缓存使用率超过阈值，且备用缓存无数据，且当前没有正在取备用缓存数据，需触发异步预取
 	isNeedPreFetch := doubleCache.activeCache.curID > threshold && doubleCache.standbyCache.segmentStart == 0 && !isPreFetching
-	logx.WithContext(ctx).Infof("starsli isNeedPreFetch, scene %d, GetID=%d, isNeedPreFetch=%v", doubleCache.sceneID, id, isNeedPreFetch)
+	logx.WithContext(ctx).Infof("starsli scene %d, GetID=%d, isNeedPreFetch=%v", doubleCache.sceneID, id, isNeedPreFetch)
 	if isNeedPreFetch {
-		logx.WithContext(ctx).Infof("starsli trigger asyncPrefetch, scene %d, curID=%d > threshold=%d", doubleCache.sceneID, doubleCache.activeCache.curID, threshold)
+		logx.WithContext(ctx).Infof("starsli set asyncPrefetch, scene %d, curID[%d] > threshold=[%d]", doubleCache.sceneID, doubleCache.activeCache.curID, threshold)
 		// 触发异步预取前，提前设置正在正在取备用缓存数据, 防止并发情况下多个协程同时触发异步预取
 		doubleCache.isPreFetching.Store(true)
 	}
@@ -190,23 +190,21 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 
 	// 并发情况下只有一个协程会执行异步预取
 	if isNeedPreFetch {
-		// 使用独立的ctx，避免主协程取消时，异步预取协程也取消执行
-		go g.asyncPrefetch(ctx, sceneID, doubleCache)
+		go g.asyncPrefetch(context.Background(), sceneID, doubleCache)
 	}
 
 	return id, nil
 }
 
 func (g *IDGenerator) asyncPrefetch(ctx context.Context, sceneID int64, doubleCache *IdSegmentDoubleCache) {
-	logx.WithContext(ctx).Infof("starsli asyncPrefetch start, scene %d", sceneID)
+	logx.Infof("starsli asyncPrefetch start, scene %d", sceneID)
+	defer doubleCache.isPreFetching.Store(false)
 	segmentStart, segmentEnd, err := g.fetchSegmentFromDB(ctx, sceneID)
 	if err != nil {
 		// 失败后，取消正在取备用缓存数据的标志
-		defer doubleCache.isPreFetching.Store(false)
-		logx.WithContext(ctx).Errorf("starsli asyncPrefetch failed, scene %d, error=%v", sceneID, err)
+		logx.Errorf("starsli asyncPrefetch failed, scene %d, error=%v", sceneID, err)
 		return
 	}
-	defer doubleCache.isPreFetching.Store(false)
 	// 只有数据库拉取成功才更新号段缓存
 	doubleCache.mu.Lock()
 	doubleCache.standbyCache.curID = segmentStart
@@ -214,6 +212,6 @@ func (g *IDGenerator) asyncPrefetch(ctx context.Context, sceneID int64, doubleCa
 	doubleCache.standbyCache.segmentEnd = segmentEnd
 	doubleCache.mu.Unlock()
 
-	logx.WithContext(ctx).Infof("starsli asyncPrefetch completed, scene %d, nextBuf=[%d,%d]", sceneID, segmentStart, segmentEnd)
+	logx.Infof("starsli asyncPrefetch completed, scene %d, nextBuf=[%d,%d]", sceneID, segmentStart, segmentEnd)
 	// 异步预取完成后，取消正在取备用缓存数据的标志
 }
