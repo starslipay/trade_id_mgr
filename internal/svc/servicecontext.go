@@ -17,7 +17,12 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	conn := sqlx.NewMysql(c.MasterDBConfig.DataSource)
+	conn := sqlx.NewMysql(
+		c.MasterDBConfig.DataSource,
+		// 等效关闭 sqlx 层熔断：所有错误都视为"可接受"，熔断器永不累计失败
+		// 避免号段预取被 circuit breaker is open 快速失败，放大缓存耗尽风险
+		sqlx.WithAcceptable(func(err error) bool { return true }),
+	)
 	ig := id_generator.MustNewIDGenerator(mysql.NewTIdSegmentModel(conn), conn, c.SceneIdList)
 	return &ServiceContext{
 		Config:      c,
