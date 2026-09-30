@@ -207,7 +207,6 @@ func (g *IDGenerator) asyncPrefetch(ctx context.Context, sceneID int64, doubleCa
 	defer doubleCache.isPreFetching.Store(false)
 	segmentStart, segmentEnd, err := g.fetchSegmentFromDB(ctx, sceneID)
 	if err != nil {
-		// 失败后，取消正在取备用缓存数据的标志
 		logx.Errorf("starsli asyncPrefetch failed, scene %d, error=%v", sceneID, err)
 		return
 	}

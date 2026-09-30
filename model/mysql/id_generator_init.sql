@@ -19,7 +19,7 @@ CREATE TABLE `t_id_segment` (
 -- int64max = 9223372036854775807 ≈ 9200000000000000000
 -- 初始化你的账单业务池
 INSERT INTO t_id_segment(scene_id,max_allocated_id,min_id,max_id,step_size,memo)
-VALUES (1,0,0,9200000000000000000,10,'单号');
+VALUES (1,0,0,9200000000000000000,5000,'单号');
 
 INSERT INTO t_id_segment(scene_id,max_allocated_id,min_id,max_id,step_size,memo)
 VALUES (0,10000000000,10000000000,9200000000000000000,100,'用户UID');
