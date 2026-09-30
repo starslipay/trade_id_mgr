@@ -153,8 +153,14 @@ func (g *IDGenerator) GetID(ctx context.Context, sceneID int64) (int64, error) {
 			logx.WithContext(ctx).Infof("starsli [IDGenerator] scene=%d, switch cache: curBuf=[%d,%d]", sceneID, doubleCache.activeCache.curID, doubleCache.activeCache.segmentEnd)
 		} else {
 			defer doubleCache.mu.Unlock()
-			logx.WithContext(ctx).Errorf("starsli scene %d, segment exhausted, activeCache curID=%d, segmentEnd=%d", doubleCache.sceneID, doubleCache.activeCache.curID, doubleCache.activeCache.segmentEnd)
-			logx.WithContext(ctx).Errorf("starsli scene %d, segment exhausted, standbyCache curID=%d, segmentEnd=%d", doubleCache.sceneID, doubleCache.standbyCache.curID, doubleCache.standbyCache.segmentEnd)
+			logx.WithContext(ctx).Infof("starsli scene %d, segment exhausted, activeCache curID=%d, segmentEnd=%d", doubleCache.sceneID, doubleCache.activeCache.curID, doubleCache.activeCache.segmentEnd)
+			logx.WithContext(ctx).Infof("starsli scene %d, segment exhausted, standbyCache curID=%d, segmentEnd=%d", doubleCache.sceneID, doubleCache.standbyCache.curID, doubleCache.standbyCache.segmentEnd)
+			isPreFetching := doubleCache.isPreFetching.Load()
+			logx.WithContext(ctx).Infof("starsli scene %d, segment exhausted, isPreFetching=%v", doubleCache.sceneID, isPreFetching)
+			if !isPreFetching {
+				doubleCache.isPreFetching.Store(true)
+				go g.asyncPrefetch(context.Background(), sceneID, doubleCache)
+			}
 			// 报错id已用完
 			return 0, xerror.NewBizError(codes.Internal, xerr.ErrCodeSegmentExhausted, "segment exhausted")
 		}
