@@ -8,7 +8,9 @@ CpuThreshold: 0 # 0 关闭CPU过载降载兜底保护
 
 Etcd:
   Hosts:
-    - etcd:2379 # 部署到本地docker
+    - etcd:2379  # etcd 集群节点1
+    - etcd2:2379 # etcd 集群节点2, 任一节点可用即可
+    - etcd3:2379 # etcd 集群节点3
     # - 127.0.0.1:2379 # 本地直接运行
     # - etcd-0.etcd.pay-ns.svc.cluster.local:2379
     # - etcd-1.etcd.pay-ns.svc.cluster.local:2379
